@@ -107,7 +107,63 @@ To update the application with the latest code:
 ssh root@167.172.247.230 "cd /home/firedisp/app && git pull && npm install && pm2 restart fire-dispatch-scraper"
 ```
 
-#### Troubleshooting
+### Development Workflow
+
+The typical workflow for making changes to the application follows these steps:
+
+1. **Make local changes**: Develop and test new features on your local machine
+2. **Commit and push to GitHub**:
+   ```bash
+   git add .
+   git commit -m "Brief description of changes"
+   git push origin main
+   ```
+3. **Update the production server**:
+   ```bash
+   ssh root@167.172.247.230 "cd /home/firedisp/app && git pull && npm install && pm2 restart fire-dispatch-scraper"
+   ```
+
+This process will:
+- Download your latest code to the server (git pull)
+- Install any new dependencies (npm install)
+- Restart the application with minimal downtime (pm2 restart)
+
+PM2 ensures the application restarts quickly, typically causing only a few seconds of downtime.
+
+### How the Application Runs on the VPS
+
+The application runs as a persistent Node.js process managed by PM2 on the Digital Ocean VPS:
+
+- **Process Management**: PM2 keeps the application running continuously and restarts it if it crashes
+- **User Permissions**: The app runs under the `firedisp` user (not root) for security
+- **Persistent Operation**: The application continuously:
+  - Authenticates with the fire department portal
+  - Scrapes for new dispatch information every few minutes
+  - Processes changes (including the new address change detection)
+  - Stores data in the Supabase database
+- **Logs**: Application logs are stored in `/root/.pm2/logs/` and can be viewed with the PM2 logs command
+- **Environment**: Configuration and API keys are securely stored in the `.env` file on the server
+
+#### Troubleshooting Server Issues
+
+If the application encounters problems on the server:
+
+1. **Check logs** for errors:
+   ```bash
+   ssh root@167.172.247.230 "pm2 logs fire-dispatch-scraper --lines 50"
+   ```
+
+2. **Restart the application**:
+   ```bash
+   ssh root@167.172.247.230 "pm2 restart fire-dispatch-scraper"
+   ```
+
+3. **Check system resources**:
+   ```bash
+   ssh root@167.172.247.230 "free -m && df -h"
+   ```
+
+#### Troubleshooting Playwright Issues
 
 If there are issues with Playwright browsers:
 
