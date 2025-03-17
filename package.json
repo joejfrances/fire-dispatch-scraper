@@ -1,0 +1,23 @@
+{
+  "name": "fire-dispatch-scraper",
+  "version": "1.0.0",
+  "description": "A scraper for fire department dispatch information",
+  "main": "src/main.ts",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@playwright/test": "^1.40.0",
+    "@supabase/supabase-js": "^2.38.4",
+    "dotenv": "^16.4.7",
+    "openai": "^4.87.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.0"
+  }
+}
