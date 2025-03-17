@@ -325,6 +325,7 @@ export class AlarmScraper {
       if (existingAlarm) {
         // Create current alarm data for comparison
         const currentData = {
+          address: address,
           alarm_type: callType,
           call_notes: callDetails.notes,
           call_timeline: callDetails.timeline
@@ -386,6 +387,11 @@ export class AlarmScraper {
           Logger.info(`Alarm #${existingAlarm.dcid}: Call type updated`);
         }
 
+        if (changes.addressChanged) {
+          updates.address = newData.address;
+          Logger.info(`Alarm #${existingAlarm.dcid}: Address updated`);
+        }
+
         if (changes.notesChanged) {
           updates.call_notes = newData.call_notes;
           Logger.info(`Alarm #${existingAlarm.dcid}: Call notes updated`);
@@ -397,7 +403,7 @@ export class AlarmScraper {
         }
 
         // Update alarm record if there are changes to the alarm itself
-        if (changes.callTypeChanged || changes.notesChanged || changes.timelineChanged) {
+        if (changes.callTypeChanged || changes.addressChanged || changes.notesChanged || changes.timelineChanged) {
           await this.alarmService.updateAlarm(existingAlarm.id!, updates);
         }
 
