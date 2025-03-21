@@ -11,7 +11,7 @@ interface AlarmDetails {
   alarm_type: string;
   call_notes: string | null;
   last_updated: string;
-  assigned_units: string[];
+  current_units: string[];
 }
 
 export class AlarmService {
@@ -334,8 +334,8 @@ export class AlarmService {
       const { data, error } = await supabaseClient
         .from('alarm_details')
         .select('*')
-        .not('assigned_units', 'eq', '{}')
-        .not('assigned_units', 'is', null);
+        .not('current_units', 'eq', '{}')
+        .not('current_units', 'is', null);
 
       if (error) {
         Logger.error('Failed to get active alarms', error);
@@ -344,8 +344,8 @@ export class AlarmService {
 
       // Filter out any alarms without units (extra safety check)
       return (data || []).filter(alarm => 
-        Array.isArray(alarm.assigned_units) && 
-        alarm.assigned_units.length > 0
+        Array.isArray(alarm.current_units) && 
+        alarm.current_units.length > 0
       );
     } catch (error) {
       Logger.error('Failed to get active alarms', error as Error);

@@ -494,23 +494,20 @@ export class AlarmScraper {
   /**
    * Process a removed alarm by deassigning all its units
    */
-  private async processRemovedAlarm(alarm: { id: number, dcid: string, assigned_units: string[] }): Promise<void> {
+  private async processRemovedAlarm(alarm: { id: number, dcid: string, current_units: string[] }): Promise<void> {
     try {
       // Double verify with direct database query for active units
       const activeUnits = await this.alarmService.getActiveUnits(alarm.id);
       
-      if (activeUnits.length === 0) {
-        return;
-      }
-      
-      Logger.info(`Deassigning units from alarm #${alarm.dcid}: ${activeUnits.join(', ')}`);
-      const success = await this.alarmService.deassignAllUnits(alarm.id);
-      
-      if (!success) {
-        Logger.error(`Failed to deassign units from alarm #${alarm.dcid}`);
+      // Check if there are actually units to deassign
+      if (activeUnits.length > 0) {
+        Logger.info(`Deassigning units from alarm ${alarm.dcid} that was removed from dispatch page`);
+        await this.alarmService.deassignAllUnits(alarm.id);
+      } else {
+        Logger.info(`Alarm ${alarm.dcid} was removed from dispatch page, but no active units to deassign`);
       }
     } catch (error) {
-      Logger.error(`Error processing removed alarm #${alarm.dcid}`, error as Error);
+      Logger.error(`Failed to process removal of alarm ${alarm.dcid}`, error as Error);
     }
   }
 
